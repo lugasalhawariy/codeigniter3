@@ -1,0 +1,55 @@
+# Version
+version: '3'
+
+# Setup
+services:
+    # PHP
+    php:
+        depends_on:
+            - mysql
+        image: codeigniter:1.0
+        restart: always
+        ports:
+            - 5000:80
+        volumes:
+            - ./development:/var/www/html
+        networks: 
+            - codeigniter
+
+    # PHPMyAdmin
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links:
+            - mysql
+        ports:
+            - 5050:80
+        environment:
+            PMA_HOST: mysql
+        depends_on: 
+            - mysql
+        networks: 
+            - codeigniter
+
+    # MySQL
+    mysql:
+        image: mysql:8.0
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+        volumes:
+            - 'wordpress_db:/var/lib/mysql'
+        networks:
+            - codeigniter
+
+# Volumes
+volumes:
+    wordpress_db:
+    wordpress_uploads:
+
+networks: 
+    codeigniter:
